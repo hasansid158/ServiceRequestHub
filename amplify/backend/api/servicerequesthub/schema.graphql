@@ -1,0 +1,11 @@
+type ServiceRequest @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  serviceName: String!
+  serviceDescription: String!
+  creationDate: AWSDate!
+  severity: String!
+  resolutionDate: AWSDate!
+  reporterName: String!
+  contactInformation: AWSEmail!
+  location: String!
+}
