@@ -1,4 +1,10 @@
-type ServiceRequest @model @auth(rules: [{ allow: owner }]) {
+type ServiceRequest @model @auth(
+    rules: [
+      { allow: owner, operations: [read, create, update, delete] }
+      { allow: private, operations: [read, create, update, delete] }
+      { allow: public, operations: [read] }
+    ]
+  ) {
   id: ID!
   serviceName: String!
   serviceDescription: String!
