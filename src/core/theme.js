@@ -5,6 +5,7 @@ const colours = {
   secondary: '#E76F51',
   textWhite: '#FFFFFF',
   lightGrey: '#F9F9F9',
+  background: '#e6eaf2',
   darkGrey: '#333333',
 };
 
@@ -83,14 +84,6 @@ const theme = createTheme({
     },
   },
   components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: colours.textWhite,
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-        },
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -120,7 +113,6 @@ const theme = createTheme({
       styleOverrides: {
         paper: {
           minWidth: '200px',
-          backgroundColor: colours.secondary,
         },
       }
     },
@@ -128,10 +120,14 @@ const theme = createTheme({
     MuiMenuItem: {
       styleOverrides: {
         root: {
-          color: colours.textWhite,
+          fontWeight: 600,
           width: '100%',
           textAlign: 'center',
           justifyContent: 'center',
+          '&:hover': {
+            backgroundColor: colours.secondary,
+            color: colours.textWhite,
+          }
         }
       }
     }

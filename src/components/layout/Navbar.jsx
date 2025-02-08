@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, memo, use } from 'react'
+import MenuDropdown from '../common/MenuDropdown';
 
 import {
   Container,
@@ -6,57 +7,63 @@ import {
   AppBar,
   Avatar,
   IconButton,
-  MenuItem,
+  Box,
   Typography,
-  Menu
 } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
 
-const MenuDropdown = ({
-  anchorEl = false,
-  handleClose = () => { },
-  handleItemClick = () => { },
-  items = []
-}) => (
-  <Menu
-    anchorEl={anchorEl}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'left',
-    }}
-    keepMounted
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'left',
-    }}
-    open={anchorEl}
-    onClose={handleClose}
-  >
-    {items.map((item) => (
-      <MenuItem key={item} onClick={() => handleItemClick(item)}>
-        {item}
-      </MenuItem>
-    ))}
-  </Menu>
-);
+// import { getUrl } from 'aws-amplify/storage';
+import { useFetchS3 } from '../../hooks/useFetchS3';
 
-const menuItemMap = {
-  'Logout': () => console.log('logout'),
-}
-
-const menuItems = [
-  'Logout',
-];
+import { useAuth } from '../auth/AuthProvider';
 
 const Navbar = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+
+  const { logout, user } = useAuth();
+
+  const logoUrl = useFetchS3('assets/logo.png');
+
+  const handleLogout = () => {
+    logout();
+    setMenuAnchorEl(null);
+  }
+
+  const menuItems = [
+    {
+      label: <><LogoutIcon sx={{ fontSize: '20px' }} />Logout</>,
+      action: handleLogout
+    }
+  ];
 
   return <>
     <AppBar color='primary' position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <IconButton size='small' onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
-            <Avatar />
-          </IconButton>
+          <Box display='flex' justifyContent='space-between' alignItems='center' width='100%'>
+            <Box>
+              {logoUrl ?
+                <Box
+                  component='img'
+                  src={logoUrl}
+                  alt='logo'
+                  style={{
+                    width: '180px',
+                    filter: 'grayscale(100%) brightness(1000%)',
+                  }}
+                />
+                :
+                <Typography color='white' variant='h6'>Service Request Hub</Typography>
+              }
+
+            </Box>
+
+            {!!user &&
+              <IconButton size='small' onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
+                <Avatar />
+              </IconButton>
+            }
+          </Box>
         </Toolbar>
       </Container>
     </AppBar>
@@ -64,12 +71,9 @@ const Navbar = () => {
     <MenuDropdown
       items={menuItems}
       anchorEl={menuAnchorEl}
-      handleItemClick={item => {
-        menuItemMap?.[item]?.();
-        setMenuAnchorEl(null);
-      }}
+      handleClose={() => setMenuAnchorEl(null)}
     />
   </>
 }
 
-export default Navbar
+export default memo(Navbar);

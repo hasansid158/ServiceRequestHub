@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { routeMap } from './routeMap';
 
 import { Dashboard } from '../../pages/Dashboard';
@@ -14,6 +14,7 @@ const AppRoutes = () => (
 
     {/* Protected Routes */}
     <Route path={routeMap.DASHBOARD} element={<PrivateRoute element={Dashboard} />} />
+    <Route path="/*" element={<Navigate to={routeMap.DASHBOARD} />} />
   </Routes>
 );
 

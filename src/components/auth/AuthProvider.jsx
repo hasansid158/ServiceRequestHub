@@ -1,36 +1,56 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import * as Auth from "@aws-amplify/auth";
-import { getCurrentUser } from 'aws-amplify/auth';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log(user)
   }, [user])
 
 
-  // Check if user is already signed in when app loads
-  useEffect(() => {
+  const getUser = () => {
     Auth.getCurrentUser()
       .then((userData) => setUser(userData))
       .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+  };
+
+
+  // Check if user is already signed in when app loads
+  useEffect(() => {
+    getUser();
   }, []);
 
-  const signUp = async (username, password, email, phoneNumber) => {
+  const confirmSignUp = async ({ username, confirmationCode }) => {
+    try {
+      await Auth.confirmSignUp({
+        username,
+        confirmationCode,
+      });
+      console.log("User confirmed successfully");
+      await Auth.autoSignIn();
+      getUser();
+    } catch (error) {
+      console.error("Confirmation failed", error);
+      throw error;
+    }
+  };
+
+  const signUp = async ({ username, password, email }) => {
     try {
       const { user } = await Auth.signUp({
         username,
         password,
-        attributes: {
-          email,
-          phone_number: phoneNumber, // E.164 number convention
+        options: {
+          userAttributes: {
+            email,
+          },
+          autoSignIn: {
+            enabled: true,
+          },
         },
-        autoSignIn: { enabled: true }, // Automatically sign in the user after confirmation
       });
       setUser(user);
       return user;
@@ -40,9 +60,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (username, password) => {
+  const login = async ({ username, password }) => {
     try {
-      const userData = await Auth.signIn(username, password);
+      console.log(username, password)
+      const userData = await Auth.signIn({ username, password });
       setUser(userData);
       return userData;
     } catch (error) {
@@ -57,7 +78,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signUp, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, signUp, login, logout, confirmSignUp }}>
       {children}
     </AuthContext.Provider>
   );
