@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { memo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ClientSideRowModelModule, AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 
@@ -35,4 +35,4 @@ const AgDataGrid = ({ rowData, ...rest }) => {
   );
 };
 
-export default AgDataGrid;
+export default memo(AgDataGrid);

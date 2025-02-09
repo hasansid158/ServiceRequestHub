@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 
 import { fetchServicesApi } from '../../api/serviceRequestApi'
 
@@ -10,7 +10,7 @@ import ServiceFormDialog from './ServiceFormDialog';
 
 import AgDataGrid from '../../components/agDataGrid/AgDataGrid';
 
-export const Dashboard = () => {
+const Dashboard = () => {
   const [snackbarObj, setSnackbarObj] = useState({
     open: false,
     msg: '',
@@ -18,27 +18,27 @@ export const Dashboard = () => {
   const [serviceData, setServiceData] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
 
+  const [openDialog, setOpenDialog] = useState(false);
+
   useEffect(() => {
     fetchServicesApi().then(setServiceData);
   }, [])
 
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleServiceCreate = (data) => {
+  const handleServiceCreate = useMemo((data) => {
     setServiceData(prev => [data, ...prev]);
-  }
+  }, [])
 
-  const handleServiceUpdate = (data) => {
+  const handleServiceUpdate = useMemo((data) => {
     setServiceData(prevData =>
       prevData.map(service =>
         service.id === data.id ? data : service
       )
     );
-  }
+  }, [])
 
-  const handleServiceDelete = (id) => {
+  const handleServiceDelete = useMemo((id) => {
     setServiceData(prevData => prevData.filter(item => item.id !== id));
-  }
+  }, [])
 
 
   return <>
@@ -98,3 +98,5 @@ export const Dashboard = () => {
     </Snackbar>
   </>
 }
+
+export default memo(Dashboard);

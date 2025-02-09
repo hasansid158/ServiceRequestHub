@@ -15,7 +15,6 @@ const ConfirmEmail = ({ username = '' }) => {
   const [error, setError] = useState('');
 
   const handleClick = async (data) => {
-    console.log(username)
     setError('');
     setIsLoading(true);
     confirmSignUp({ ...data, username })
