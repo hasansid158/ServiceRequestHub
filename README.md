@@ -16,14 +16,22 @@ I built this React app using AWS Amplify for authentication and data management.
 
 ## Trade Offs:
 
-Material UI: I used this for its ready-made UI components, which really sped up building a clean and responsive interface. The downside is that it can add a bit of extra weight to the app.
-ag-grid: This helped display data in a grid with built-in sorting, filtering, and pagination. It’s great for handling lots of data but is a bit heavier than simpler table solutions.
-date-fns: I used it for date calculations, like figuring out the resolution dates. It’s lightweight and straightforward but might require combining a few functions for more complex tasks.
-NanoID: I used nanoID for generating unique IDs. Its lightweight and it provides customizable IDs as I wanted to make ids more recognizable using alphanumeric values, but have to keep the IDs length at least 12 digits to avoid duplication chances.
+- Material UI: I used this for its ready-made UI components, which really sped up building a clean and responsive interface. The downside is that it can add a bit of extra weight to the app.
+- ag-grid: This helped display data in a grid with built-in sorting, filtering, and pagination. It’s great for handling lots of data but is a bit heavier than simpler table solutions.
+- date-fns: I used it for date calculations, like figuring out the resolution dates. It’s lightweight and straightforward but might require combining a few functions for more complex tasks.
+- NanoID: I used nanoID for generating unique IDs. Its lightweight and it provides customizable IDs as I wanted to make ids more recognizable using alphanumeric values, but have to keep the IDs length at least 12 digits to avoid duplication chances.
 
 ## Links:
 
 [GitHub](https://github.com/hasansid158/ServiceRequestHub)
+[Live Demo](https://master.dv4tumfd2veea.amplifyapp.com)
+
+#### Login credentials:
+
+- username: testuser123
+- password: testuser123
+
+You can also create a new account, you'll need to use your real email account for verification code.
 
 ## Project Setup Instructions
 
