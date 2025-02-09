@@ -1,0 +1,14 @@
+{
+  "resourceName": "assets",
+  "policyUUID": "720b300f",
+  "bucketName": "servicerequesthub-assets",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

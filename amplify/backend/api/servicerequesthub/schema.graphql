@@ -1,0 +1,21 @@
+type ServiceRequest
+  @model
+  @auth(
+    rules: [
+      {
+        allow: private
+        provider: userPools
+        operations: [read, create, update, delete]
+      }
+    ]
+  ) {
+  id: ID!
+  serviceName: String!
+  serviceDescription: String!
+  creationDate: AWSDateTime!
+  severity: String!
+  resolutionDate: AWSDateTime!
+  reporterName: String!
+  contactInformation: AWSEmail!
+  location: String!
+}
