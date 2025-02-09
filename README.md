@@ -21,11 +21,11 @@ ag-grid: This helped display data in a grid with built-in sorting, filtering, an
 date-fns: I used it for date calculations, like figuring out the resolution dates. It’s lightweight and straightforward but might require combining a few functions for more complex tasks.
 NanoID: I used nanoID for generating unique IDs. Its lightweight and it provides customizable IDs as I wanted to make ids more recognizable using alphanumeric values, but have to keep the IDs length at least 12 digits to avoid duplication chances.
 
-## Project Setup Instructions
-
 ## Links:
 
 [GitHub](https://github.com/hasansid158/ServiceRequestHub)
+
+## Project Setup Instructions
 
 ### 1. Clone the Repository
 
