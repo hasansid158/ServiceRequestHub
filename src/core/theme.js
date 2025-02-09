@@ -124,11 +124,18 @@ const theme = createTheme({
           width: '100%',
           textAlign: 'center',
           justifyContent: 'center',
+          '&.Mui-selected': {
+            backgroundColor: colours.primary,
+            color: colours.textWhite,
+            '&:hover': {
+              backgroundColor: colours.primary,
+            }
+          },
           '&:hover': {
             backgroundColor: colours.secondary,
             color: colours.textWhite,
-          }
-        }
+          },
+        },
       }
     }
   },

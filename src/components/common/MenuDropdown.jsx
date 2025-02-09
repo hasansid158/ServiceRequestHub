@@ -14,9 +14,9 @@ const MenuDropdown = ({
     onClose={handleClose}
     {...rest}
   >
-    {items.map((item = {}) => (
+    {items.map((item = {}, key) => (
       <MenuItem
-        key={item}
+        key={key}
         onClick={item?.action}
         sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
       >

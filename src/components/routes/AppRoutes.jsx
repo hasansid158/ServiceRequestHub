@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { routeMap } from './routeMap';
 
-import { Dashboard } from '../../pages/Dashboard';
+import Dashboard from '../../pages/dashboard/Dashboard';
 import { AuthPage } from '../../pages/authPages/AuthPage';
 
-import PrivateRoute from '../auth/PrivateRoute';
+import PrivateRoute from './PrivateRoute';
 
 const AppRoutes = () => (
   <Routes>

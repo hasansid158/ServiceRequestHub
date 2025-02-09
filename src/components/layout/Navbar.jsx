@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, use } from 'react'
+import React, { useState, useEffect, memo, use, useMemo, useCallback } from 'react'
 import MenuDropdown from '../common/MenuDropdown';
 
 import {
@@ -9,12 +9,11 @@ import {
   IconButton,
   Box,
   Typography,
+  Button,
 } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-// import { getUrl } from 'aws-amplify/storage';
 import { useFetchS3 } from '../../hooks/useFetchS3';
-
 import { useAuth } from '../auth/AuthProvider';
 
 const Navbar = () => {
@@ -23,24 +22,53 @@ const Navbar = () => {
   const { logout, user } = useAuth();
 
   const logoUrl = useFetchS3('assets/logo.png');
+  const aboutUsFileUrl = useFetchS3('assets/ABOUT US.pdf');
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     setMenuAnchorEl(null);
-  }
+  }, [])
 
   const menuItems = [
+    {
+      label: <Typography variant='body' fontWeight={600}>{user?.username}</Typography>,
+      actions: () => {},
+    },
     {
       label: <><LogoutIcon sx={{ fontSize: '20px' }} />Logout</>,
       action: handleLogout
     }
   ];
 
+  //downloading pdf file fetched from s3
+  const handleAboutUsClick = useCallback(async () => {
+    if (aboutUsFileUrl) {
+      const response = await fetch(aboutUsFileUrl);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = 'ABOUT_US.pdf';
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(link);
+    }
+  }, [aboutUsFileUrl]);
+
   return <>
     <AppBar color='primary' position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <Box display='flex' justifyContent='space-between' alignItems='center' width='100%'>
+          <Box 
+            display='flex' 
+            justifyContent={{xs: 'center', sm: 'space-between'}}
+            alignItems='center' 
+            width='100%' 
+            flexWrap='wrap' 
+            columnGap={3}
+            py={{xs: 1, sm: 0}}
+          >
             <Box>
               {logoUrl ?
                 <Box
@@ -59,9 +87,17 @@ const Navbar = () => {
             </Box>
 
             {!!user &&
-              <IconButton size='small' onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
-                <Avatar />
-              </IconButton>
+              <Box 
+                display='flex' 
+                justifyContent='center' 
+                alignItems='center' 
+                gap={2}
+              >
+                <Button variant='outlined' color='white' onClick={handleAboutUsClick}>About us</Button>
+                <IconButton size='small' onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
+                  <Avatar />
+                </IconButton>
+              </Box>
             }
           </Box>
         </Toolbar>

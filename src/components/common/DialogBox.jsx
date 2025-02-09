@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { Dialog, Box, Typography, IconButton, Divider } from '@mui/material'
 import { Close } from '@mui/icons-material'
 

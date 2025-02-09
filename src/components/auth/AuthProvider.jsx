@@ -6,17 +6,11 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    console.log(user)
-  }, [user])
-
-
   const getUser = () => {
     Auth.getCurrentUser()
       .then((userData) => setUser(userData))
       .catch(() => setUser(null))
   };
-
 
   // Check if user is already signed in when app loads
   useEffect(() => {
@@ -62,10 +56,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async ({ username, password }) => {
     try {
-      console.log(username, password)
-      const userData = await Auth.signIn({ username, password });
-      setUser(userData);
-      return userData;
+      await Auth.signIn({ username, password });
+      getUser();
     } catch (error) {
       console.error("Login failed", error);
       throw error;
