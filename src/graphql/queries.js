@@ -15,8 +15,6 @@ export const getServiceRequest = /* GraphQL */ `
       location
       createdAt
       updatedAt
-      owner
-      __typename
     }
   }
 `;
@@ -39,8 +37,6 @@ export const listServiceRequests = /* GraphQL */ `
         location
         createdAt
         updatedAt
-        owner
-        __typename
       }
       nextToken
       __typename

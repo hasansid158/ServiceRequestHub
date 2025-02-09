@@ -18,8 +18,6 @@ export const createServiceRequest = /* GraphQL */ `
       location
       createdAt
       updatedAt
-      owner
-      __typename
     }
   }
 `;
@@ -40,8 +38,6 @@ export const updateServiceRequest = /* GraphQL */ `
       location
       createdAt
       updatedAt
-      owner
-      __typename
     }
   }
 `;
@@ -52,18 +48,6 @@ export const deleteServiceRequest = /* GraphQL */ `
   ) {
     deleteServiceRequest(input: $input, condition: $condition) {
       id
-      serviceName
-      serviceDescription
-      creationDate
-      severity
-      resolutionDate
-      reporterName
-      contactInformation
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
     }
   }
 `;

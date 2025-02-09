@@ -1,16 +1,20 @@
-type ServiceRequest @model @auth(
+type ServiceRequest
+  @model
+  @auth(
     rules: [
-      { allow: owner, operations: [read, create, update, delete] }
-      { allow: private, operations: [read, create, update, delete] }
-      { allow: public, operations: [read] }
+      {
+        allow: private
+        provider: userPools
+        operations: [read, create, update, delete]
+      }
     ]
   ) {
   id: ID!
   serviceName: String!
   serviceDescription: String!
-  creationDate: AWSDate!
+  creationDate: AWSDateTime!
   severity: String!
-  resolutionDate: AWSDate!
+  resolutionDate: AWSDateTime!
   reporterName: String!
   contactInformation: AWSEmail!
   location: String!

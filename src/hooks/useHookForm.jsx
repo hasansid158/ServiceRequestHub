@@ -5,11 +5,11 @@ const useHookForm = (initialValues, options) => {
     control,
     formState: {
       isValid,
-      errors
+      errors,
+      isDirty,
     },
     getValues,
     setValue,
-    watch,
     reset,
     ...rest
   } = useForm({
@@ -23,10 +23,10 @@ const useHookForm = (initialValues, options) => {
     control,
     getValues,
     setValue,
-    watch,
     isValid,
     reset,
     errors,
+    isDirty,
   };
 
   return {

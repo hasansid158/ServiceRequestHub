@@ -1,62 +1,135 @@
-import React, { useEffect } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 
 import DialogBox from '../../components/common/DialogBox'
 import { TextInput } from '../../components/input/TextInput'
 import useHookFOrm from '../../hooks/useHookForm';
 
-import { Box, Grid2 } from '@mui/material';
+import { Box, Button, Grid2 } from '@mui/material';
+
+import SelectorInput from '../../components/input/SelectorInput';
+import { DateInput } from '../../components/input/DateInput';
+
+import { createServiceApi, updateServiceApi, deleteServiceApi } from '../../api/serviceRequestApi';
 
 import { customAlphabet } from 'nanoid';
+import { addDays, parseISO } from 'date-fns';
 
-// id: ID!
-// serviceName: String!
-// serviceDescription: String!
-// creationDate: AWSDate!
-// severity: String!
-// resolutionDate: AWSDate!
-// reporterName: String!
-// contactInformation: AWSEmail!
-// location: String!
+const severityDayDiffMap = {
+  'low': 5,
+  'medium': 3,
+  'high': 1,
+};
 
-// 	Service Request Name: Short Text
-// 	Service Request Description: Long Text
-// 	Creation Date (DD/MM/YYYY): Date input
-// 	Severity: Dropdown (Low, Medium, High)
-// 	Resolution Date (DD/MM/YYYY):: Date input (to be automatically calculated, 5 days from creation date if severity is low, 3 days from creation date if severity is medium, 1 day from creation date if severity is High)
-// 	Reporter Name: Text input
-// 	Contact Information: Email input
-// 	Location: Text input
-
-
-//unique ID which contains only alphanumeric values
-const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 12);
+const severityOptions = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' }
+]
 
 export const ServiceFormDialog = ({
-  fetchedData,
-  isUpdate,
+  selectedRow = null,
   open = false,
   onClose = () => { },
-  ...rest
+  onServiceCreate = () => {},
+  onServiceUpdate = () => {},
+  onServiceDelete = () => {},
+  setOpenSnack = () => {},
 }) => {
-  const { formObj, handleSubmit } = useHookFOrm();
+  const { formObj, handleSubmit, watch } = useHookFOrm();
+  const isUpdate = useMemo(() => !!selectedRow, [selectedRow]);
 
-  const serviceRequestId = nanoid();
+  const [loading, setLoading] = useState(false);
 
+  //resetting form on load with row value if its update
   useEffect(() => {
-    const preFilData = fetchedData || {};
+    let resetObj = {}
 
-    formObj?.reset({
-      id: serviceRequestId,
-      ...preFilData
-    })
-  }, [fetchedData])
+    if (selectedRow) {
+      const {
+        //to skip
+        createdAt,
+        updatedAt,
+        //select all other
+        ...rest
+      } = selectedRow;
+      resetObj = {
+        ...rest,
+        creationDate: parseISO(selectedRow?.creationDate),
+        resolutionDate: parseISO(selectedRow?.resolutionDate),
+      };
+    }
 
+    formObj?.reset(resetObj);
+  }, [open])
 
+  const { severity, creationDate } = watch();
+  useEffect(() => {
+    if (!severity || !creationDate) return;
+
+    const nextResolutionDay = addDays(creationDate, severityDayDiffMap?.[severity]);
+    formObj.setValue('resolutionDate', nextResolutionDay);
+  }, [severity, creationDate])
+
+  const onSubmitCreate = useMemo((data) => {
+    setLoading(true);
+    //Generating unique ID which contains only alphanumeric values
+    const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 12);
+    const uniqueServiceId = nanoid();
+    
+    const payload = {
+      ...data,
+      id: uniqueServiceId,
+    }
+
+    createServiceApi(payload)
+      .then((res) => {
+        onServiceCreate(res?.createServiceRequest);
+        formObj?.reset({});
+        setOpenSnack(`Service created successfully with ID: ${uniqueServiceId}`);
+        onClose();
+      })
+      .catch((err) => console.log(err, 'err'))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [])
+  
+  const onSubmitUpdate = useMemo((data) => {
+    setLoading(true);
+    updateServiceApi(data)
+     .then(res => {
+      onServiceUpdate(res);
+      formObj?.reset({});
+      setOpenSnack(`Service ID: ${data?.id} updated successfully`);
+      onClose();
+     })
+     .catch((err) => console.log(err, 'err'))
+     .finally(() => {
+       setLoading(false);
+     });
+  }, [])
+  
+  const onSubmitDelete = useMemo(() => {
+    const { id } = selectedRow;
+
+    setLoading(true);
+    deleteServiceApi({id})
+     .then(() => {
+      onServiceDelete(id);
+      formObj?.reset({});
+      setOpenSnack(`Service ID: ${id} deleted successfully`);
+      onClose();
+     })
+     .catch((err) => console.log(err, 'err'))
+     .finally(() => {
+       setLoading(false);
+     });
+  }, [])
 
   return (
     <DialogBox
       maxWidth="sm"
-      open={true}
+      open={open}
       onClose={onClose}
       title={`${isUpdate ? 'Update' : 'Create'} Service Request`}
     >
@@ -64,9 +137,9 @@ export const ServiceFormDialog = ({
         <Grid2 container spacing={3}>
           <Grid2 size={6}>
             <TextInput 
-              formObj={formObj} 
+              formObj={formObj}
               name='serviceName' 
-              label='Service Name' 
+              label='Service Name*' 
               required
               fullWidth
             />
@@ -74,16 +147,110 @@ export const ServiceFormDialog = ({
           <Grid2 size={6}>
             <TextInput 
               formObj={formObj} 
-              name='serviceDescription' 
-              label='Service Description' 
+              name='reporterName' 
+              label='Reporter Name*' 
               required
               fullWidth
             />
           </Grid2>
+          <Grid2 size={6}>
+            <TextInput 
+              formObj={formObj} 
+              name='contactInformation' 
+              label='Contact Information*' 
+              type='email'
+              required
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 size={6}>
+            <TextInput 
+              formObj={formObj} 
+              name='location' 
+              label='Location*' 
+              required
+              fullWidth
+            />
+          </Grid2>
+
+          <Grid2 size={4}>
+            <SelectorInput 
+              formObj={formObj} 
+              name='severity' 
+              label='Severity*' 
+              required
+              fullWidth     
+              selectorOptions={severityOptions}
+            />
+          </Grid2>
+          <Grid2 size={4}>
+            <DateInput 
+              formObj={formObj} 
+              name='creationDate' 
+              label='Creation Date*' 
+              required
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 size={4}>
+            <DateInput 
+              formObj={formObj} 
+              name='resolutionDate' 
+              label='Resolution Date' 
+              fullWidth
+              textFieldProps={{
+                readOnly: true,
+                InputProps: {
+                  endAdornment: null,
+                }
+              }}
+            />
+          </Grid2>
+          
+          <Grid2 size={12}>
+            <TextInput 
+              formObj={formObj} 
+              name='serviceDescription' 
+              label='Service Description' 
+              required
+              fullWidth
+              multiline
+              minRows={2}
+              maxRows={5}
+            />
+          </Grid2>
         </Grid2>
+
+        <Box display='flex' justifyContent='space-between' width='100%' mt={3}>
+            <Box>
+              {isUpdate && 
+                <Button
+                  variant='outlined'
+                  color='primary'
+                  sx={{maxWidth: '100px', width: '100%'}}
+                  onClick={onSubmitDelete}
+                >
+                  Delete
+                </Button>
+              }
+            </Box>
+
+            <Button 
+              variant='contained' 
+              color='secondary' 
+              sx={{maxWidth: '220px', width: '100%'}}
+              onClick={() => {
+                isUpdate ? handleSubmit(onSubmitUpdate)() : handleSubmit(onSubmitCreate)();
+              }}
+              loading={loading}
+              disabled={isUpdate ? !formObj.isDirty : false }
+            >
+              {`${isUpdate ? 'UPDATE' : 'SUBMIT'}`}
+            </Button>
+        </Box>
       </Box>
     </DialogBox>
   )
 }
 
-export default ServiceFormDialog;
+export default memo(ServiceFormDialog);
