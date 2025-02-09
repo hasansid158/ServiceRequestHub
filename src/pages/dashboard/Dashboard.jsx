@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 
 import { fetchServicesApi } from '../../api/serviceRequestApi'
 
@@ -24,11 +24,11 @@ const Dashboard = () => {
     fetchServicesApi().then(setServiceData);
   }, [])
 
-  const handleServiceCreate = useMemo((data) => {
+  const handleServiceCreate = useCallback((data) => {
     setServiceData(prev => [data, ...prev]);
   }, [])
 
-  const handleServiceUpdate = useMemo((data) => {
+  const handleServiceUpdate = useCallback((data) => {
     setServiceData(prevData =>
       prevData.map(service =>
         service.id === data.id ? data : service
@@ -36,15 +36,22 @@ const Dashboard = () => {
     );
   }, [])
 
-  const handleServiceDelete = useMemo((id) => {
+  const handleServiceDelete = useCallback((id) => {
     setServiceData(prevData => prevData.filter(item => item.id !== id));
   }, [])
 
 
   return <>
     <Box pt={3} pb={2}>
-      <Box display='flex' justifyContent='space-between' alignItems='center'>
-        <Typography variant='h3'>Service Requests</Typography>
+      <Box 
+        display='flex' 
+        justifyContent={{xs: 'center', sm: 'space-between'}}
+        alignItems='center'
+        flexWrap='wrap'
+        columnGap={4}
+        rowGap={1}
+      >
+        <Typography variant='h3' textAlign='center'>Service Requests</Typography>
         <Button 
           variant='contained'
           sx={{ minWidth: '150px' }} 

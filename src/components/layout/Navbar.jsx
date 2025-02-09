@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, use, useMemo } from 'react'
+import React, { useState, useEffect, memo, use, useMemo, useCallback } from 'react'
 import MenuDropdown from '../common/MenuDropdown';
 
 import {
@@ -24,24 +24,24 @@ const Navbar = () => {
   const logoUrl = useFetchS3('assets/logo.png');
   const aboutUsFileUrl = useFetchS3('assets/ABOUT US.pdf');
 
-  const handleLogout = useMemo(() => {
+  const handleLogout = useCallback(() => {
     logout();
     setMenuAnchorEl(null);
   }, [])
 
-  const menuItems = useMemo(() => [
+  const menuItems = [
     {
-      label: <Typography variant='body' fontWeight={600}>{user?.username || ''}</Typography>,
+      label: <Typography variant='body' fontWeight={600}>{user?.username}</Typography>,
       actions: () => {},
     },
     {
       label: <><LogoutIcon sx={{ fontSize: '20px' }} />Logout</>,
       action: handleLogout
     }
-  ], [logoUrl, aboutUsFileUrl]);
+  ];
 
   //downloading pdf file fetched from s3
-  const handleAboutUsClick = useMemo(async () => {
+  const handleAboutUsClick = useCallback(async () => {
     if (aboutUsFileUrl) {
       const response = await fetch(aboutUsFileUrl);
       const blob = await response.blob();
@@ -54,13 +54,21 @@ const Navbar = () => {
       window.URL.revokeObjectURL(blobUrl);
       document.body.removeChild(link);
     }
-  }, [aboutUsFileUrl])
+  }, [aboutUsFileUrl]);
 
   return <>
     <AppBar color='primary' position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <Box display='flex' justifyContent='space-between' alignItems='center' width='100%' flexWrap='wrap' gap={2}>
+          <Box 
+            display='flex' 
+            justifyContent={{xs: 'center', sm: 'space-between'}}
+            alignItems='center' 
+            width='100%' 
+            flexWrap='wrap' 
+            columnGap={3}
+            py={{xs: 1, sm: 0}}
+          >
             <Box>
               {logoUrl ?
                 <Box
@@ -79,7 +87,12 @@ const Navbar = () => {
             </Box>
 
             {!!user &&
-              <Box display='flex' justifyContent='center' alignItems='center' gap={2}>
+              <Box 
+                display='flex' 
+                justifyContent='center' 
+                alignItems='center' 
+                gap={2}
+              >
                 <Button variant='outlined' color='white' onClick={handleAboutUsClick}>About us</Button>
                 <IconButton size='small' onClick={(e) => setMenuAnchorEl(e.currentTarget)}>
                   <Avatar />

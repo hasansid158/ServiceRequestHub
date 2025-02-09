@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import DialogBox from '../../components/common/DialogBox'
 import { TextInput } from '../../components/input/TextInput'
@@ -40,7 +40,7 @@ export const ServiceFormDialog = ({
 
   const [loading, setLoading] = useState(false);
 
-  //resetting form on load with row value if its update
+  //resetting form on load with selected row value if its update
   useEffect(() => {
     let resetObj = {}
 
@@ -70,7 +70,7 @@ export const ServiceFormDialog = ({
     formObj.setValue('resolutionDate', nextResolutionDay);
   }, [severity, creationDate])
 
-  const onSubmitCreate = useMemo((data) => {
+  const onSubmitCreate = useCallback((data) => {
     setLoading(true);
     //Generating unique ID which contains only alphanumeric values
     const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 12);
@@ -94,7 +94,7 @@ export const ServiceFormDialog = ({
       });
   }, [])
   
-  const onSubmitUpdate = useMemo((data) => {
+  const onSubmitUpdate = useCallback((data) => {
     setLoading(true);
     updateServiceApi(data)
      .then(res => {
@@ -109,7 +109,7 @@ export const ServiceFormDialog = ({
      });
   }, [])
   
-  const onSubmitDelete = useMemo(() => {
+  const onSubmitDelete = useCallback(() => {
     const { id } = selectedRow;
 
     setLoading(true);
@@ -124,7 +124,7 @@ export const ServiceFormDialog = ({
      .finally(() => {
        setLoading(false);
      });
-  }, [])
+  }, [selectedRow])
 
   return (
     <DialogBox
